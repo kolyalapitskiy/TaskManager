@@ -1,13 +1,13 @@
 
 import type { TaskProps } from "../interfaces/types";
 
-function TaskItem ({name, age, status, onStatus, onDelete, onEdit} : TaskProps) {
+function TaskItem ({name, id, status, onStatus, onDelete, onEdit} : TaskProps) {
     return(
         <>
-            <div key={age}>
-                <li key={age}>{name}</li>
-                <button onClick={() => onDelete(age)}>удалить задачу</button>
-                <button onClick={() => onEdit(age)}>change задачу</button>
+            <div key={id}>
+                <li key={id}>{name}</li>
+                <button onClick={() => onDelete(id)}>удалить задачу</button>
+                <button onClick={() => onEdit(id)}>change задачу</button>
                 <select
                   value={status}
                   onChange={(e) => onStatus(e.target.value as "todo" | "completed" | "in-progress")}

@@ -1,65 +1,7 @@
-// import UserCard from './components/UserCard';
-// import TaskItem from './components/Tasks'
-// import Badge from './components/Badge';
-// import { useState, useEffect } from 'react';
-// import type {TodoInterface} from './interfaces/types';
-// import {useTasks} from './hooks/useTasks'
-
-// function App() {
-
-//   const [count, setCount] = useState(0);
-//   const [isDark, setDark] = useState(false)
-//   const customers = ["Dmitiry", "Ksusha", "Lexa"]
-//   const {task, tasks, tasksAdd, taskEdit, taskStatusChanging, taskDelete, handleChangeTask} = useTasks();
-
-//   return (
-//     <>
-//     <UserCard name="Dima" email="Dmitrievich@ru.com" role="admin" age={22} isAdmin={true} />
-//     <hr/>
-//     <UserCard name="Ksusha" email="Ksenia@ru.com" role="user" age={22} isAdmin={false} />
-//     <hr/>
-//     <UserCard name="Dima" email="Dmitrievich@ru.com" role="user" age={22} isAdmin={false} />
-//     <hr/>
-//     <UserCard name="Dima" email="Dmitrievich@ru.com" role="admin" age={22} isAdmin={true} />
-//     <hr/>
-//     <UserCard name="Dima" email="Dmitrievich@ru.com" role="admin" age={22} isAdmin={true} />
-//     <hr/>useState
-//     <button onClick={() => setCount(count + 1)}> + 1</button>
-//     <button onClick={() => setCount(count - 1)}> - 1</button>
-//     {count == 5 ? "gbpltw" : count}
-//     <button style={{ backgroundColor: isDark ? "#000" : "#fff" }} onClick={() => setDark(!isDark)}>Смена цвета</button>
-//     <input type="text" value={task} onChange={handleChangeTask} placeholder='task'/>
-//     <button onClick={tasksAdd}>добавить задачу</button>
-
-
-//     {task}
-//     {tasks.map((item) => (
-//       <TaskItem 
-//         key={item.age}
-//         name={item.name}
-//         age={item.age}
-//         status={item.status}
-//         onDelete={() => taskDelete(item.age)}
-//         onEdit={() => taskEdit(item.age)}
-//         onStatus={(newStatus) => taskStatusChanging(item.age, newStatus)}
-//       />
-//     ))}
-//     {customers.map((item, index) => (
-//       <h5 key={index}>{item}</h5>
-//     ))}
-
-//     </>
-//   )
-// }
-
-// export default App;
-
-
-
 import TaskItem from './components/Tasks'
 import UserCard from './components/UserCard'
 import Badge from './components/Badge'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { TodoInterface } from './interfaces/types'
 import { useTasks } from './hooks/useTasks'
 import './styles/App.css'
@@ -70,10 +12,16 @@ function App() {
   const customers = ["Dmitiry", "Ksusha", "Lexa"]
   const { task, tasks, tasksAdd, taskEdit, taskStatusChanging, taskDelete, handleChangeTask } = useTasks()
 
-  // Группируем по статусу
   const todoTasks = tasks.filter(t => t.status === 'todo')
   const inProgressTasks = tasks.filter(t => t.status === 'in-progress')
   const completedTasks = tasks.filter(t => t.status === 'completed')
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleAdd = () => {
+    tasksAdd();
+    inputRef.current?.focus(); 
+    }
 
   return (
     <>
@@ -85,12 +33,13 @@ function App() {
         <h1>📋 Kanban Board</h1>
         <input
           className="kanban-input"
+          ref={inputRef}
           type="text"
           value={task}
           onChange={handleChangeTask}
           placeholder="Новая задача..."
         />
-        <button className="kanban-btn" onClick={tasksAdd}>Добавить</button>
+        <button className="kanban-btn" onClick={handleAdd}>Добавить</button>
       </header>
 
       <div className="kanban-board">
@@ -104,16 +53,16 @@ function App() {
           </div>
           <ul className="kanban-tasks">
             {todoTasks.map((item) => (
-              <li className="task-card" key={item.age}>
+              <li className="task-card" key={item.id}>
                 <div className="task-card-name">{item.name}</div>
                 <div className="task-card-actions">
-                  <button onClick={() => taskDelete(item.age)}>🗑 Удалить</button>
-                  <button onClick={() => taskEdit(item.age)}>✏️ Изменить</button>
+                  <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
+                  <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
                   <select
                     value={item.status}
                     onChange={(e) =>
                       taskStatusChanging(
-                        item.age,
+                        item.id,
                         e.target.value as "todo" | "completed" | "in-progress"
                       )
                     }
@@ -139,16 +88,16 @@ function App() {
           </div>
           <ul className="kanban-tasks">
             {inProgressTasks.map((item) => (
-              <li className="task-card" key={item.age}>
+              <li className="task-card" key={item.id}>
                 <div className="task-card-name">{item.name}</div>
                 <div className="task-card-actions">
-                  <button onClick={() => taskDelete(item.age)}>🗑 Удалить</button>
-                  <button onClick={() => taskEdit(item.age)}>✏️ Изменить</button>
+                  <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
+                  <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
                   <select
                     value={item.status}
                     onChange={(e) =>
                       taskStatusChanging(
-                        item.age,
+                        item.id,
                         e.target.value as "todo" | "completed" | "in-progress"
                       )
                     }
@@ -174,16 +123,16 @@ function App() {
           </div>
           <ul className="kanban-tasks">
             {completedTasks.map((item) => (
-              <li className="task-card" key={item.age}>
+              <li className="task-card" key={item.id}>
                 <div className="task-card-name">{item.name}</div>
                 <div className="task-card-actions">
-                  <button onClick={() => taskDelete(item.age)}>🗑 Удалить</button>
-                  <button onClick={() => taskEdit(item.age)}>✏️ Изменить</button>
+                  <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
+                  <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
                   <select
                     value={item.status}
                     onChange={(e) =>
                       taskStatusChanging(
-                        item.age,
+                        item.id,
                         e.target.value as "todo" | "completed" | "in-progress"
                       )
                     }

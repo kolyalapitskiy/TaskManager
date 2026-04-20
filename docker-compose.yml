@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Сервис базы данных
+  db:
+    image: postgres:15-alpine
+    container_name: kanban_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: myuser       # Имя пользователя БД
+      POSTGRES_PASSWORD: mypassword # Пароль
+      POSTGRES_DB: kanban_board    # Имя самой базы
+    ports:
+      - "5433:5432" # Прокидываем стандартный порт Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Данные не пропадут после перезагрузки
+
+  # Сервис твоего бэкенда
+  api:
+    build: ./back-end # Говорим Докеру искать Dockerfile в этой папке
+    container_name: kanban_api
+    restart: always
+    ports:
+      - "5000:5000" # Твой сервер будет доступен на 5000 порту
+    environment:
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/kanban_board
+      - PORT=5000
+    depends_on:
+      - db # Сервер не запустится, пока не поднимется база
+
+volumes:
+  pgdata: # Резервируем место под данные
