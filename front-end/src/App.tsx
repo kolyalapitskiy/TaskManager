@@ -9,19 +9,17 @@ import './styles/App.css'
 function App() {
   const [count, setCount] = useState(0)
   const [isDark, setDark] = useState(false)
-  const customers = ["Dmitiry", "Ksusha", "Lexa"]
-  const { task, tasks, tasksAdd, taskEdit, taskStatusChanging, taskDelete, handleChangeTask } = useTasks()
+  const { task, tasks, tasksAdd, taskEdit, taskStatusChanging, taskDelete, handleChangeTask, taskUpdateDescription } = useTasks()
 
   const todoTasks = tasks.filter(t => t.status === 'todo')
   const inProgressTasks = tasks.filter(t => t.status === 'in-progress')
   const completedTasks = tasks.filter(t => t.status === 'completed')
 
   const inputRef = useRef<HTMLInputElement>(null);
-
   const handleAdd = () => {
     tasksAdd();
     inputRef.current?.focus(); 
-    }
+  }
 
   return (
     <>
