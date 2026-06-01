@@ -414,3 +414,86 @@
     border-right-color: var(--border);
   }
 }
+
+
+
+.task-card.thin {
+  list-style: none;
+  background: #1e1e2f;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-title {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.task-status {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #444;
+}
+
+.task-status-todo {
+  background: #ff4d4d;
+}
+
+.task-status-in-progress {
+  background: #ffcc00;
+  color: black;
+}
+
+.task-status-completed {
+  background: #4caf50;
+}
+
+.task-body textarea {
+  width: 100%;
+  min-height: 40px;
+  font-size: 12px;
+  padding: 4px;
+}
+
+.task-description p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+button {
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+button.danger {
+  background: #ff4d4d;
+  color: white;
+}

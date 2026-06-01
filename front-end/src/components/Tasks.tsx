@@ -1,56 +1,87 @@
-
 import type { TaskProps } from "../interfaces/types";
-import { useState } from 'react';
+import { useState } from "react";
 
-function TaskItem ({name, id, status, description, onStatus, onDelete, onEdit, onUpdateDescription} : TaskProps) {
-    const [isEditingDesc, setIsEditingDesc] = useState(false);
-    const [tempDesc, setTempDesc] = useState(description || '');
+export function TaskItem({
+  name,
+  id,
+  status,
+  description,
+  onStatus,
+  onDelete,
+  onEdit,
+  onUpdateDescription,
+}: TaskProps) {
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
+  const [tempDesc, setTempDesc] = useState(description || "");
 
-    const handleSaveDesc = () => {
-        onUpdateDescription(id, tempDesc);
-        setIsEditingDesc(false);
-    };
-    return(
-        <>
-            <div key={id}>
-                <li key={id}>{name}</li>
-                <button onClick={() => onDelete(id)}>удалить задачу</button>
-                <button onClick={() => onEdit(id)}>change задачу</button>
-                <div style={{ margin: '10px 0' }}>
-                    {isEditingDesc ? (
-                        <div>
-                            <textarea
-                                value={tempDesc}
-                                onChange={(e) => setTempDesc(e.target.value)}
-                                placeholder="Добавьте детали к задаче..."
-                            />
-                            <button onClick={handleSaveDesc}>Сохранить</button>
-                            <button onClick={() => setIsEditingDesc(false)}>Отмена</button>
-                        </div>
-                    ) : (
-                        <div>
-                            <p>{description || <i>Нет описания</i>}</p>
-                            <button onClick={() => setIsEditingDesc(true)}>
-                                {description ? "Изменить описание" : "Добавить информацию"}
-                            </button>
-                        </div>
-                    )}
-                </div>
-                <select
-                  value={status}
-                  onChange={(e) => onStatus(e.target.value as "todo" | "completed" | "in-progress")}
-                >
-                  <option value="todo">Нужно сделать</option>
-                  <option value="in-progress">В процессе</option>
-                  <option value="completed">Готово</option>
-                </select>
-                <br/>
-                {status}
+  const handleSaveDesc = () => {
+    onUpdateDescription(id, tempDesc.trim());
+    setIsEditingDesc(false);
+  };
+
+  return (
+    <li className="task-card thin">
+      {/* HEADER */}
+      <div className="task-header">
+        <span className="task-title">{name}</span>
+
+        <span className={`task-status task-status-${status}`}>
+          {status}
+        </span>
+      </div>
+
+      {/* DESCRIPTION */}
+      <div className="task-body">
+        {isEditingDesc ? (
+          <div className="task-edit">
+            <textarea
+              value={tempDesc}
+              onChange={(e) => setTempDesc(e.target.value)}
+              placeholder="Описание..."
+            />
+
+            <div className="task-actions-row">
+              <button onClick={handleSaveDesc}>✔</button>
+              <button onClick={() => setIsEditingDesc(false)}>✖</button>
             </div>
-            <br/>
-        </>
-    )
+          </div>
+        ) : (
+          <div className="task-description">
+            <p>
+              {description?.trim() ? (
+                description
+              ) : (
+                <span className="task-muted">нет описания</span>
+              )}
+            </p>
+
+            <button onClick={() => setIsEditingDesc(true)}>
+              ✎
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* FOOTER */}
+      <div className="task-footer">
+        <select
+          value={status}
+          onChange={(e) =>
+            onStatus(e.target.value as "todo" | "in-progress" | "completed")
+          }
+        >
+          <option value="todo">🔴</option>
+          <option value="in-progress">🟡</option>
+          <option value="completed">🟢</option>
+        </select>
+
+        <div className="task-buttons">
+          <button onClick={() => onEdit(id)}>✎</button>
+          <button className="danger" onClick={() => onDelete(id)}>
+            🗑
+          </button>
+        </div>
+      </div>
+    </li>
+  );
 }
-
-
-export default TaskItem;
