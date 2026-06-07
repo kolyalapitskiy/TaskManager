@@ -13,77 +13,61 @@ export function TaskItem({
 }: TaskProps) {
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [tempDesc, setTempDesc] = useState(description || "");
-  console.log(tempDesc);
 
   const handleSaveDesc = () => {
-    console.log("🔥 CLICK SAVE DESC");
-    console.log("ID:", id);
-    console.log("DESC:", tempDesc);
     onUpdateDescription(id, tempDesc.trim());
     setIsEditingDesc(false);
   };
 
   return (
-    <li className="task-card thin">
-      {/* HEADER */}
-      <div className="task-header">
-        <span className="task-title">{name}</span>
-
-        <span className={`task-status task-status-${status}`}>
-          {status}
-        </span>
+    <li className={`task-card task-card-${status}`}>
+      <div className="task-card-header">
+        <span className="task-card-name">{name}</span>
+        <span className={`status-badge status-${status}`}>{status}</span>
       </div>
 
-      {/* DESCRIPTION */}
-      <div className="task-body">
+      <div className="task-card-body">
         {isEditingDesc ? (
-          <div className="task-edit">
+          <div className="task-desc-edit">
             <textarea
               value={tempDesc}
               onChange={(e) => setTempDesc(e.target.value)}
-              placeholder="Описание..."
+              placeholder="Добавьте описание..."
+              autoFocus
             />
-
-            <div className="task-actions-row">
-              <button onClick={handleSaveDesc}>✔</button>
-              <button onClick={() => setIsEditingDesc(false)}>✖</button>
+            <div className="task-desc-controls">
+              <button className="save-btn" onClick={handleSaveDesc}>Сохранить</button>
+              <button className="cancel-btn" onClick={() => setIsEditingDesc(false)}>Отмена</button>
             </div>
           </div>
         ) : (
-          <div className="task-description">
-            <p>
-              {description?.trim() ? (
-                description
-              ) : (
-                <span className="task-muted">нет описания</span>
-              )}
+          <div className="task-desc-view" onClick={() => setIsEditingDesc(true)}>
+            <p className={!description?.trim() ? "task-muted" : ""}>
+              {description?.trim() ? description : "Нажмите, чтобы добавить описание..."}
             </p>
-
-            <button onClick={() => setIsEditingDesc(true)}>
-              ✎
-            </button>
+            <span className="edit-icon">✎</span>
           </div>
         )}
       </div>
 
-      {/* FOOTER */}
-      <div className="task-footer">
-        <select
-          value={status}
-          onChange={(e) =>
-            onStatus(e.target.value as "todo" | "in-progress" | "completed")
-          }
-        >
-          <option value="todo">🔴</option>
-          <option value="in-progress">🟡</option>
-          <option value="completed">🟢</option>
-        </select>
+      <div className="task-card-footer">
+        <div className="footer-left">
+          <select
+            className="status-select"
+            value={status}
+            onChange={(e) =>
+              onStatus(e.target.value as "todo" | "in-progress" | "completed")
+            }
+          >
+            <option value="todo">🔴 Нужно сделать</option>
+            <option value="in-progress">🟡 В процессе</option>
+            <option value="completed">🟢 Готово</option>
+          </select>
+        </div>
 
-        <div className="task-buttons">
-          <button onClick={() => onEdit(id)}>✎</button>
-          <button className="danger" onClick={() => onDelete(id)}>
-            🗑
-          </button>
+        <div className="footer-right">
+          <button className="edit-btn" title="Изменить имя" onClick={() => onEdit(id)}>✎</button>
+          <button className="delete-btn" title="Удалить" onClick={() => onDelete(id)}>🗑</button>
         </div>
       </div>
     </li>

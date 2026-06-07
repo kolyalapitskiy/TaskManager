@@ -57,7 +57,7 @@ function App() {
       
       <div className="user-info">
         <span>Привет, {user?.username}!</span>
-        <button onClick={logout}>Выйти</button>
+        <button className="logout-btn" onClick={logout}>Выйти</button>
       </div>
 
       <div className="kanban-board">
