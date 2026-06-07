@@ -1,33 +1,45 @@
 import { useState, useEffect } from 'react';
 import type { TodoInterface } from '../interfaces/types';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const useTasks = () => {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState<TodoInterface[]>([]);
+  const { token, logout } = useAuthStore();
   const tasksApi = 'http://localhost:5000/api/tasks';
   
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+
   const loadTasks = async () => {
+    if (!token) return;
     try {
-      const response = await fetch(tasksApi);
+      const response = await fetch(tasksApi, { headers });
+      if (response.status === 401 || response.status === 403) {
+        logout();
+        return;
+      }
       const data = await response.json();
-      setTasks(data);
+      setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Ошибка при загрузке:", error);
+      console.error(error);
     }
   };
 
-  useEffect(() => { loadTasks(); }, []);
+  useEffect(() => { loadTasks(); }, [token]);
 
   const handleChangeTask = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask(e.target.value);
   };
 
   const tasksAdd = async () => {
-    if (!task) return;
+    if (!task || !token) return;
     try {
       const response = await fetch(tasksApi, {
         method: "POST",
-        headers: { 'Content-Type': "application/json" },
+        headers,
         body: JSON.stringify({ name: task }),
       });
       if (response.ok) {
@@ -41,8 +53,12 @@ export const useTasks = () => {
   };
 
   const taskDelete = async (idToDelete: number) => {
+    if (!token) return;
     try {
-      const response = await fetch(`${tasksApi}/${idToDelete}`, { method: 'DELETE' });
+      const response = await fetch(`${tasksApi}/${idToDelete}`, { 
+        method: 'DELETE',
+        headers
+      });
       if (response.ok) {
         setTasks((prev) => prev.filter((item) => item.id !== idToDelete));
       }
@@ -52,12 +68,13 @@ export const useTasks = () => {
   };
 
   const taskEdit = async (idToEdit: number) => {
-    console.log('Нажал EDIT для ID:', idToEdit);
+    if (!token) return;
     const newName = prompt("Введите новое название!");
+    if (!newName) return;
     try {
       const response = await fetch(`${tasksApi}/${idToEdit}`, {
         method: "PATCH",
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ name: newName }),
       });
       if (response.ok) {
@@ -65,15 +82,16 @@ export const useTasks = () => {
         setTasks((prev) => prev.map((t) => (t.id === idToEdit ? updatedTask : t)));
       }
     } catch (error) {
-      alert("Ошибка при обновлении!");
+      console.error(error);
     }
   };
 
   const taskStatusChanging = async (idToEdit: number, taskStatus: "todo" | "completed" | "in-progress") => {
+    if (!token) return;
     try {
       const response = await fetch(`${tasksApi}/${idToEdit}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ status: taskStatus }),
       });
       if (response.ok) {
@@ -86,23 +104,24 @@ export const useTasks = () => {
     }
   };
 
-
-  const taskUpdateDescription = async (idToUpdateDescription: number, taskDescription: string) => {
+  const taskUpdateDescription = async (id: number, taskDescription: string) => {
+    if (!token) return;
     try {
-      const response = await fetch(`${tasksApi}/${idToUpdateDescription}`, {
+      const response = await fetch(`${tasksApi}/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: taskDescription})
+        headers,
+        body: JSON.stringify({ description: taskDescription })
       });
-
       if (response.ok) {
         const updatedTask = await response.json();
-        setTasks((prev) => prev.map((t) => (t.id === idToUpdateDescription ? updatedTask : t )))
-      }   
-    } catch (error) {
-        console.error("Ошибка при updateDescription")
+        setTasks((prev) =>
+          prev.map((t) => (t.id === id ? updatedTask : t))
+        );
       }
-  }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return {
     task,

@@ -1,100 +1,108 @@
-// import { useState } from 'react';
+import { useState } from 'react';
+import { useAuthStore } from '../store/useAuthStore';
 
-// export const AuthModal = ({ isOpen, onClose, onAuthSuccess }: any) => {
-//   const [isRegister, setIsRegister] = useState(false); // Переключатель Логин/Регистрация
-//   const [formData, setFormData] = useState({
-//     username: '',
-//     email: '',
-//     password: '',
-//     confirmPassword: ''
-//   });
-//   const [error, setError] = useState('');
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setError('');
+export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
+  const [isRegister, setIsRegister] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
+  const setAuth = useAuthStore((state) => state.setAuth);
 
-//     // 1. Валидация совпадения паролей (только при регистрации)
-//     if (isRegister && formData.password !== formData.confirmPassword) {
-//       setError('Пароли не совпадают!');
-//       return;
-//     }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
-//     const endpoint = isRegister ? '/api/register' : '/api/login';
+    if (isRegister && formData.password !== formData.confirmPassword) {
+      setError('Пароли не совпадают!');
+      return;
+    }
 
-//     try {
-//       const response = await fetch(`http://localhost:5000${endpoint}`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(formData),
-//       });
+    const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
 
-//       const data = await response.json();
+    try {
+      const response = await fetch(`http://localhost:5000${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-//       if (response.ok) {
-//         // Сохраняем токен (сделаем это в следующем шаге)
-//         localStorage.setItem('token', data.token);
-//         onAuthSuccess(data.username);
-//         onClose();
-//       } else {
-//         // Выводим ошибку от сервера (например, "Email занят")
-//         setError(data.error || 'Что-то пошло не так');
-//       }
-//     } catch (err) {
-//       setError('Ошибка сети');
-//     }
-//   };
+      const data = await response.json();
 
-//   if (!isOpen) return null;
+      if (response.ok) {
+        if (!isRegister) {
+          setAuth(data.token, data.user);
+          onClose();
+        } else {
+          setIsRegister(false);
+          setError('Регистрация успешна! Теперь войдите.');
+        }
+      } else {
+        setError(data.error || 'Ошибка');
+      }
+    } catch (err) {
+      setError('Ошибка сети');
+    }
+  };
 
-//   return (
-//     <div className="modal-overlay">
-//       <div className="modal-content">
-//         <h2>{isRegister ? 'Регистрация' : 'Вход'}</h2>
-//         <form onSubmit={handleSubmit}>
-//           {isRegister && (
-//             <input
-//               type="text"
-//               placeholder="Логин"
-//               value={formData.username}
-//               onChange={(e) => setFormData({...formData, username: e.target.value})}
-//               required
-//             />
-//           )}
-//           <input
-//             type="email"
-//             placeholder="Email"
-//             value={formData.email}
-//             onChange={(e) => setFormData({...formData, email: e.target.value})}
-//             required
-//           />
-//           <input
-//             type="password"
-//             placeholder="Пароль"
-//             value={formData.password}
-//             onChange={(e) => setFormData({...formData, password: e.target.value})}
-//             required
-//           />
-//           {isRegister && (
-//             <input
-//               type="password"
-//               placeholder="Подтвердите пароль"
-//               value={formData.confirmPassword}
-//               onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-//               required
-//             />
-//           )}
+  if (!isOpen) return null;
 
-//           {error && <p className="error-text">{error}</p>}
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h2>{isRegister ? 'Регистрация' : 'Вход'}</h2>
+        <form onSubmit={handleSubmit}>
+          {isRegister && (
+            <input
+              type="text"
+              placeholder="Логин"
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              required
+            />
+          )}
+          <input
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Пароль"
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            required
+          />
+          {isRegister && (
+            <input
+              type="password"
+              placeholder="Подтвердите пароль"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+              required
+            />
+          )}
 
-//           <button type="submit">{isRegister ? 'Создать аккаунт' : 'Войти'}</button>
-//         </form>
+          {error && <p className="error-text">{error}</p>}
 
-//         <button className="toggle-btn" onClick={() => setIsRegister(!isRegister)}>
-//           {isRegister ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Регистрация'}
-//         </button>
-//         <button onClick={onClose}>Закрыть</button>
-//       </div>
-//     </div>
-//   );
-// };
+          <button type="submit">{isRegister ? 'Создать аккаунт' : 'Войти'}</button>
+        </form>
+
+        <button className="toggle-btn" onClick={() => setIsRegister(!isRegister)}>
+          {isRegister ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Регистрация'}
+        </button>
+        <button onClick={onClose}>Закрыть</button>
+      </div>
+    </div>
+  );
+};

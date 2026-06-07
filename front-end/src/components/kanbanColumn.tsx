@@ -28,10 +28,8 @@ export const KanbanColumn = ({ title, icon, tasks, ...actions }: Props) => {
             onStatus={(status) => actions.onStatus(item.id, status)}
             onDelete={() => actions.onDelete(item.id)}
             onEdit={() => actions.onEdit(item.id)}
-            onUpdateDescription={(id: number, desc: string) =>
-                actions.onUpdateDescription(item.id, desc)
-            }
-        />  
+            onUpdateDescription={(id, desc) => actions.onUpdateDescription(id, desc)}
+          />  
         ))}
       </ul>
     </div>

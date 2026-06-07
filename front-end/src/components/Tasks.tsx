@@ -13,8 +13,12 @@ export function TaskItem({
 }: TaskProps) {
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [tempDesc, setTempDesc] = useState(description || "");
+  console.log(tempDesc);
 
   const handleSaveDesc = () => {
+    console.log("🔥 CLICK SAVE DESC");
+    console.log("ID:", id);
+    console.log("DESC:", tempDesc);
     onUpdateDescription(id, tempDesc.trim());
     setIsEditingDesc(false);
   };

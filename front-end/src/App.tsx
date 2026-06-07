@@ -1,170 +1,48 @@
-// import { useTasks } from './hooks/useTasks'
-// import { KanbanColumn } from './components/kanbanColumn'
-// import './styles/App.css'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-//   const [isDark, setDark] = useState(false)
-//   const { task, tasks, tasksAdd, taskEdit, taskStatusChanging, taskDelete, handleChangeTask, taskUpdateDescription } = useTasks()
-
-//   const todoTasks = tasks.filter(t => t.status === 'todo')
-//   const inProgressTasks = tasks.filter(t => t.status === 'in-progress')
-//   const completedTasks = tasks.filter(t => t.status === 'completed')
-
-//   const inputRef = useRef<HTMLInputElement>(null);
-//   const handleAdd = () => {
-//     tasksAdd();
-//     inputRef.current?.focus(); 
-//   }
-
-//   return (
-//     <>
-//       <button className="dark-toggle" onClick={() => setDark(!isDark)}>
-//         {isDark ? '☀️ Светлая' : '🌙 Тёмная'}
-//       </button>
-
-//       <header className="kanban-header">
-//         <h1>📋 Kanban Board</h1>
-//         <input
-//           className="kanban-input"
-//           ref={inputRef}
-//           type="text"
-//           value={task}
-//           onChange={handleChangeTask}
-//           placeholder="Новая задача..."
-//         />
-//         <button className="kanban-btn" onClick={handleAdd}>Добавить</button>
-//       </header>
-
-//       <div className="kanban-board">
-//         {/* TODO */}
-//         <div className="kanban-column">
-//           <div className="kanban-column-header">
-//             <span className="kanban-column-title">
-//               🔴 Нужно сделать
-//             </span>
-//             <span className="kanban-count">{todoTasks.length}</span>
-//           </div>
-//           <ul className="kanban-tasks">
-//             {todoTasks.map((item) => (
-//               <li className="task-card" key={item.id}>
-//                 <div className="task-card-name">{item.name}</div>
-//                 <div className="task-card-actions">
-//                   <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
-//                   <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
-//                   <select
-//                     value={item.status}
-//                     onChange={(e) =>
-//                       taskStatusChanging(
-//                         item.id,
-//                         e.target.value as "todo" | "completed" | "in-progress"
-//                       )
-//                     }
-//                   >
-//                     <option value="todo">Нужно сделать</option>
-//                     <option value="in-progress">В процессе</option>
-//                     <option value="completed">Готово</option>
-//                   </select>
-//                 </div>
-//                 <span className={`status-badge ${item.status}`}>{item.status}</span>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-
-//         {/* IN PROGRESS */}
-//         <div className="kanban-column">
-//           <div className="kanban-column-header">
-//             <span className="kanban-column-title">
-//               🟡 В процессе
-//             </span>
-//             <span className="kanban-count">{inProgressTasks.length}</span>
-//           </div>
-//           <ul className="kanban-tasks">
-//             {inProgressTasks.map((item) => (
-//               <li className="task-card" key={item.id}>
-//                 <div className="task-card-name">{item.name}</div>
-//                 <div className="task-card-actions">
-//                   <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
-//                   <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
-//                   <select
-//                     value={item.status}
-//                     onChange={(e) =>
-//                       taskStatusChanging(
-//                         item.id,
-//                         e.target.value as "todo" | "completed" | "in-progress"
-//                       )
-//                     }
-//                   >
-//                     <option value="todo">Нужно сделать</option>
-//                     <option value="in-progress">В процессе</option>
-//                     <option value="completed">Готово</option>
-//                   </select>
-//                 </div>
-//                 <span className={`status-badge ${item.status}`}>{item.status}</span>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-
-//         {/* COMPLETED */}
-//         <div className="kanban-column">
-//           <div className="kanban-column-header">
-//             <span className="kanban-column-title">
-//               🟢 Готово
-//             </span>
-//             <span className="kanban-count">{completedTasks.length}</span>
-//           </div>
-//           <ul className="kanban-tasks">
-//             {completedTasks.map((item) => (
-//               <li className="task-card" key={item.id}>
-//                 <div className="task-card-name">{item.name}</div>
-//                 <div className="task-card-actions">
-//                   <button onClick={() => taskDelete(item.id)}>🗑 Удалить</button>
-//                   <button onClick={() => taskEdit(item.id)}>✏️ Изменить</button>
-//                   <select
-//                     value={item.status}
-//                     onChange={(e) =>
-//                       taskStatusChanging(
-//                         item.id,
-//                         e.target.value as "todo" | "completed" | "in-progress"
-//                       )
-//                     }
-//                   >
-//                     <option value="todo">Нужно сделать</option>
-//                     <option value="in-progress">В процессе</option>
-//                     <option value="completed">Готово</option>
-//                   </select>
-//                 </div>
-//                 <span className={`status-badge ${item.status}`}>{item.status}</span>
-//               </li>
-//             ))}
-//           </ul>
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
-
-// export default App
-
-
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useTasks } from './hooks/useTasks'
 import { KanbanColumn } from './components/kanbanColumn'
 import { Header } from './components/Header'
+import { useThemeStore } from './store/useThemeStore'
+import { useAuthStore } from './store/useAuthStore'
+import { AuthModal } from './components/Auth'
 import './styles/App.css'
 
-
 function App() {
-  const { tasks, task, handleChangeTask, tasksAdd, taskEdit, taskDelete, taskStatusChanging, taskUpdateDescription } = useTasks();
+  const {
+    tasks,
+    task,
+    handleChangeTask,
+    tasksAdd,
+    taskEdit,
+    taskDelete,
+    taskStatusChanging,
+    taskUpdateDescription
+  } = useTasks();
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const { isDark, toggleTheme } = useThemeStore();
+  const { token, user, logout } = useAuthStore();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.className = isDark ? 'dark' : 'light';
+  }, [isDark]);
 
   const columns = [
     { status: 'todo', title: 'Нужно сделать', icon: '🔴' },
     { status: 'in-progress', title: 'В процессе', icon: '🟡' },
     { status: 'completed', title: 'Готово', icon: '🟢' },
   ];
+
+  if (!token) {
+    return (
+      <div className="auth-screen">
+        <h1>TaskManager</h1>
+        <button onClick={() => setIsAuthModalOpen(true)}>Войти или Зарегистрироваться</button>
+        <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">
@@ -173,11 +51,18 @@ function App() {
         onInputChange={handleChangeTask}
         onAdd={tasksAdd}
         inputRef={inputRef as React.RefObject<HTMLInputElement>}
+        isDark={isDark}
+        toggleTheme={toggleTheme}
       />
       
+      <div className="user-info">
+        <span>Привет, {user?.username}!</span>
+        <button onClick={logout}>Выйти</button>
+      </div>
+
       <div className="kanban-board">
         {columns.map(col => (
-          <KanbanColumn 
+          <KanbanColumn
             key={col.status}
             title={col.title}
             icon={col.icon}

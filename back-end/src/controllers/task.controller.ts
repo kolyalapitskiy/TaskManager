@@ -6,10 +6,11 @@ export const getTasks = async (
   res: Response
 ) => {
   try {
-    const tasks = await taskService.getTasks();
-    res.json(tasks);
-  } catch {
-    res.status(500).json({
+    const userId = req.user!.id;
+    const tasks = await taskService.getTasks(userId);
+    return res.json(tasks);
+  } catch (error) {
+    return res.status(500).json({
       error: 'Database error',
     });
   }
@@ -21,20 +22,18 @@ export const createTask = async (
 ) => {
   try {
     const { name } = req.body;
+    const userId = req.user!.id;
 
-    if (!name) {
+    if (!name?.trim()) {
       return res.status(400).json({
         error: 'Task name is required',
       });
     }
 
-    const task = await taskService.createTask(name);
-
-    res.status(201).json(task);
-  } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
+    const task = await taskService.createTask(name.trim(), userId);
+    return res.status(201).json(task);
+  } catch (error) {
+    return res.status(500).json({
       error: 'Database error',
     });
   }
@@ -45,16 +44,29 @@ export const deleteTask = async (
   res: Response
 ) => {
   try {
-    const task = await taskService.deleteTask(
-      req.params.id
-    );
+    const id = req.params.id;
+    const userId = req.user!.id;
 
-    res.json({
+    if (!id) {
+      return res.status(400).json({
+        error: 'Task id is required',
+      });
+    }
+
+    const task = await taskService.deleteTask(id, userId);
+
+    if (!task) {
+      return res.status(404).json({
+        error: 'Task not found',
+      });
+    }
+
+    return res.json({
       message: 'Task deleted',
       task,
     });
-  } catch {
-    res.status(500).json({
+  } catch (error) {
+    return res.status(500).json({
       error: 'Delete failed',
     });
   }
@@ -65,17 +77,27 @@ export const updateTask = async (
   res: Response
 ) => {
   try {
-    const { name, status } = req.body;
+    const id = req.params.id;
+    const updates = req.body;
+    const userId = req.user!.id;
 
-    const task = await taskService.updateTask(
-      req.params.id,
-      name,
-      status
-    );
+    if (!id) {
+      return res.status(400).json({
+        error: 'Task id is required',
+      });
+    }
 
-    res.json(task);
-  } catch {
-    res.status(500).json({
+    const updatedTask = await taskService.updateTask(id, updates, userId);
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        error: 'Task not found or no fields provided',
+      });
+    }
+
+    return res.json(updatedTask);
+  } catch (error) {
+    return res.status(500).json({
       error: 'Update failed',
     });
   }
