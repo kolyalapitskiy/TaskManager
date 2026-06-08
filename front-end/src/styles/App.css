@@ -433,12 +433,13 @@ body.dark {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  box-sizing: border-box;
 }
 
 .task-desc-edit textarea {
   width: 100%;
   min-height: 80px;
-  padding: 8px;
+  padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--accent);
   background: var(--input-bg);
@@ -447,6 +448,7 @@ body.dark {
   font-size: 13px;
   resize: vertical;
   outline: none;
+  box-sizing: border-box; /* Важно, чтобы padding не расширял ширину */
 }
 
 .task-desc-controls {

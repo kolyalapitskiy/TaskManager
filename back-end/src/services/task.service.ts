@@ -93,9 +93,9 @@ export const updateTask = async (
       )
       .join(', ');
 
-  const values =
+  const values: Array<string | number> =
     filteredUpdates.map(
-      ([_, value]) => value
+      ([_, value]) => value as string
     );
 
   values.push(id);
