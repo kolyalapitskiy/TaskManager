@@ -29,7 +29,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     const endpoint = isRegister ? '/api/auth/register' : '/api/auth/login';
 
     try {
-      const response = await fetch(`http://back-end-production-b958.up.railway.app${endpoint}`, {
+      const response = await fetch(`https://back-end-production-b958.up.railway.app${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
