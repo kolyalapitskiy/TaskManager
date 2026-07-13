@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'https://front-end-production-a5fa.up.railway.app',
+  origin: 'https://front-end-production-cfa4.up.railway.app',
   credentials: true
 }));
 app.use(express.json());
