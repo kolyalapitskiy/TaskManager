@@ -6,7 +6,7 @@ export const useTasks = () => {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState<TodoInterface[]>([]);
   const { token, logout } = useAuthStore();
-  const tasksApi = 'https://back-end-production-b958.up.railway.app/api/tasks';     //  'http://localhost:5000/api/tasks'
+  const tasksApi = 'https://back-end-production-2590.up.railway.app/api/tasks';     //  'http://localhost:5000/api/tasks'
   
   const headers = {
     'Content-Type': 'application/json',
